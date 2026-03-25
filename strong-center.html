@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strong Center — Gym · Café · Comunidad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #080808;
+      --ink:     #0F0F0F;
+      --card:    #131313;
+      --border:  #1E1E1E;
+      --border2: #282828;
+      --lime:    #C9D620;
+      --lime-d:  #9EA819;
+      --lime-xs: rgba(201,214,32,0.08);
+      --lime-sm: rgba(201,214,32,0.15);
+      --white:   #F2F2F0;
+      --muted:   #6B6B6B;
+      --faint:   #3A3A3A;
+      --ease:    cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--lime); border-radius: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 4rem;
+      transition: background 0.5s, border-color 0.5s;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo img {
+      height: 46px; width: auto; display: block;
+    }
+    .nav-links { display: flex; gap: 2.8rem; list-style: none; align-items: center; }
+    .nav-links a {
+      font-size: .78rem; font-weight: 400;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--lime) !important;
+      color: var(--black) !important;
+      padding: .5rem 1.3rem !important;
+      border-radius: 2px;
+      font-weight: 500 !important;
+      letter-spacing: .12em !important;
+      transition: opacity .2s !important;
+    }
+    .nav-cta:hover { opacity: .85 !important; color: var(--black) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); transition: .3s; }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: .1s; } .d2 { transition-delay: .22s; }
+    .d3 { transition-delay: .36s; } .d4 { transition-delay: .5s; }
+
+    /* ── LABEL ── */
+    .label {
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-size: .7rem; font-weight: 400;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--lime); margin-bottom: 1.4rem;
+    }
+    .label::before { content: ''; display: inline-block; width: 18px; height: 1px; background: var(--lime); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: grid; grid-template-rows: 1fr auto;
+      position: relative; overflow: hidden;
+      padding-top: 80px;
+    }
+    /* Subtle grid texture */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: .25; z-index: 0;
+      mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);
+    }
+    .hero-glow {
+      position: absolute; top: -10%; right: -5%; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,214,32,.06) 0%, transparent 65%);
+      z-index: 0; pointer-events: none;
+    }
+    .hero-body {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 4rem 5rem;
+      max-width: 1400px; margin: 0 auto; width: 100%;
+    }
+    .hero-eyebrow {
+      font-size: .72rem; font-weight: 400;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--muted);
+      display: flex; align-items: center; gap: .8rem;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp .8s .2s var(--ease) forwards;
+    }
+    .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--muted); flex-shrink: 0; }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(6rem, 13vw, 15rem);
+      line-height: .9;
+      letter-spacing: .02em;
+      color: var(--white);
+      margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp 1s .35s var(--ease) forwards;
+    }
+    .hero-title .accent { color: var(--lime); }
+    .hero-title .ghost {
+      -webkit-text-stroke: 1px rgba(242,242,240,.18);
+      color: transparent;
+    }
+    .hero-bottom {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 3rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .9s .6s var(--ease) forwards;
+    }
+    .hero-sub {
+      font-size: 1rem; font-weight: 300;
+      color: var(--muted); max-width: 400px; line-height: 1.9;
+    }
+    .hero-sub em { color: var(--white); font-style: normal; font-weight: 400; }
+    .hero-actions { display: flex; gap: .8rem; flex-shrink: 0; flex-wrap: wrap; }
+
+    /* Buttons */
+    .btn-lime {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: var(--lime); color: var(--black);
+      padding: .85rem 1.8rem; border-radius: 2px;
+      font-size: .78rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none;
+      transition: opacity .2s, transform .3s var(--ease);
+    }
+    .btn-lime:hover { opacity: .88; transform: translateY(-2px); }
+    .btn-lime svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .55rem;
+      border: 1px solid var(--border2); color: var(--muted);
+      padding: .85rem 1.8rem; border-radius: 2px;
+      font-size: .78rem; font-weight: 400;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color .25s, color .25s;
+    }
+    .btn-ghost:hover { border-color: var(--lime); color: var(--white); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: .55rem;
+      border: 1px solid var(--border2); color: var(--muted);
+      padding: .75rem 1.5rem; border-radius: 2px;
+      font-size: .78rem; font-weight: 400;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color .25s, color .25s;
+    }
+    .btn-outline:hover { border-color: var(--lime); color: var(--white); }
+
+    /* Ticker */
+    .hero-ticker {
+      position: relative; z-index: 2;
+      border-top: 1px solid var(--border); overflow: hidden;
+      padding: .7rem 0;
+    }
+    .ticker-track {
+      display: flex; white-space: nowrap;
+      animation: ticker 32s linear infinite;
+    }
+    .ticker-item {
+      font-size: .66rem; font-weight: 400;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--muted); padding: 0 3rem;
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+    .tdot { width: 3px; height: 3px; border-radius: 50%; background: var(--lime); flex-shrink: 0; }
+
+    /* ── ABOUT ── */
+    .about {
+      padding: 9rem 4rem;
+      max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: 5fr 6fr;
+      gap: 8rem; align-items: start;
+    }
+    .about-left {}
+    .about-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 6vw, 7rem);
+      line-height: .9;
+      letter-spacing: .03em;
+      margin-top: .8rem; margin-bottom: 2.5rem;
+    }
+    .about-title .accent { color: var(--lime); }
+    .about-desc {
+      font-size: .96rem; font-weight: 300;
+      color: var(--muted); line-height: 1.9;
+    }
+    .about-desc strong { color: var(--white); font-weight: 400; }
+    .about-stats {
+      margin-top: 3.5rem;
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0; border: 1px solid var(--border);
+    }
+    .stat {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.2rem; color: var(--lime); line-height: 1;
+    }
+    .stat-label { font-size: .68rem; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
+    .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); }
+    .pillar {
+      padding: 2.4rem 2rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s;
+    }
+    .pillar:nth-child(2n) { border-right: none; }
+    .pillar:nth-child(3), .pillar:nth-child(4) { border-bottom: none; }
+    .pillar:hover { background: var(--card); }
+    .pillar-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--lime); margin-bottom: 1.4rem;
+    }
+    .pillar-title { font-size: .82rem; font-weight: 500; letter-spacing: .06em; color: var(--white); margin-bottom: .6rem; }
+    .pillar-text { font-size: .8rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--border); margin: 0 4rem; }
+
+    /* ── SERVICES ── */
+    .services { padding: 9rem 4rem; max-width: 1400px; margin: 0 auto; }
+    .services-header { display: grid; grid-template-columns: 1fr 1fr; align-items: end; margin-bottom: 5rem; gap: 4rem; }
+    .srv-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5.5vw, 6.5rem);
+      line-height: .9; letter-spacing: .03em;
+    }
+    .srv-title .accent { color: var(--lime); }
+    .srv-desc { font-size: .92rem; color: var(--muted); line-height: 1.85; font-weight: 300; }
+    .services-list { display: flex; flex-direction: column; }
+    .svc-row {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      align-items: center; gap: 3rem;
+      padding: 2.5rem 0; border-top: 1px solid var(--border);
+      transition: background .25s; cursor: default;
+    }
+    .svc-row:last-child { border-bottom: 1px solid var(--border); }
+    .svc-row:hover { background: var(--card); margin: 0 -2rem; padding-left: 2rem; padding-right: 2rem; }
+    .svc-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: .1em;
+      color: var(--faint); transition: color .3s;
+    }
+    .svc-row:hover .svc-num { color: var(--lime); }
+    .svc-info {}
+    .svc-name { font-size: 1.3rem; font-weight: 400; color: var(--white); margin-bottom: .5rem; letter-spacing: -.01em; }
+    .svc-text { font-size: .84rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
+    .svc-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .tag {
+      font-size: .66rem; font-weight: 400;
+      letter-spacing: .12em; text-transform: uppercase;
+      border: 1px solid var(--border2); color: var(--faint);
+      padding: .22rem .7rem; border-radius: 1px;
+      transition: border-color .2s, color .2s;
+    }
+    .svc-row:hover .tag { border-color: rgba(201,214,32,.25); color: var(--muted); }
+
+    /* ── CAFÉ ── */
+    .cafe-section {
+      margin: 0 4rem;
+      border: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .cafe-visual {
+      background: var(--card);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 560px;
+    }
+    .cafe-bg-circle {
+      position: absolute;
+      width: 340px; height: 340px; border-radius: 50%;
+      border: 1px solid rgba(201,214,32,.08);
+    }
+    .cafe-bg-circle.c1 { width: 480px; height: 480px; border-color: rgba(201,214,32,.04); animation: spin 40s linear infinite; }
+    .cafe-bg-circle.c2 { animation: spin 65s linear infinite reverse; }
+    .cafe-bg-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 40% 55%, rgba(201,214,32,.07) 0%, transparent 60%);
+    }
+    .cafe-inner { position: relative; z-index: 1; text-align: center; padding: 3rem; }
+    .cafe-icon { font-size: 5.5rem; display: block; margin-bottom: 1.5rem; }
+    .cafe-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; letter-spacing: .08em;
+      color: var(--white); line-height: 1;
+    }
+    .cafe-brand span { color: var(--lime); }
+    .cafe-tagline {
+      font-size: .68rem; font-weight: 400;
+      letter-spacing: .24em; text-transform: uppercase;
+      color: var(--muted); margin-top: .8rem;
+    }
+    .cafe-content { padding: 4.5rem; display: flex; flex-direction: column; justify-content: center; }
+    .cafe-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem, 3.5vw, 4.5rem);
+      line-height: .92; letter-spacing: .03em;
+      margin-top: .8rem; margin-bottom: 2rem;
+    }
+    .cafe-title .accent { color: var(--lime); }
+    .cafe-desc { font-size: .95rem; font-weight: 300; color: var(--muted); line-height: 1.9; }
+    .cafe-desc strong { color: var(--white); font-weight: 400; }
+    .cafe-items { margin-top: 2.8rem; display: flex; flex-direction: column; gap: .8rem; }
+    .cafe-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid var(--border);
+      transition: border-color .25s, background .25s;
+    }
+    .cafe-item:hover { border-color: rgba(201,214,32,.2); background: rgba(201,214,32,.03); }
+    .cafe-item-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: .1rem; }
+    .cafe-item-title { font-size: .84rem; font-weight: 500; color: var(--white); }
+    .cafe-item-text { font-size: .78rem; color: var(--muted); margin-top: .2rem; line-height: 1.6; font-weight: 300; }
+
+    /* ── GALLERY PLACEHOLDER ── */
+    .gallery-section { padding: 9rem 4rem; max-width: 1400px; margin: 0 auto; }
+    .gallery-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; margin-bottom: 3rem;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .gal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      line-height: .9; letter-spacing: .03em;
+    }
+    .gal-title .accent { color: var(--lime); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12,1fr);
+      grid-template-rows: 260px 210px;
+      gap: 1px; background: var(--border);
+    }
+    .g-item { overflow: hidden; position: relative; cursor: pointer; }
+    .g-inner {
+      width: 100%; height: 100%;
+      transition: transform .6s var(--ease);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .g-item:hover .g-inner { transform: scale(1.04); }
+    .g-item:nth-child(1){grid-column:1/6;grid-row:1}
+    .g-item:nth-child(2){grid-column:6/9;grid-row:1}
+    .g-item:nth-child(3){grid-column:9/13;grid-row:1}
+    .g-item:nth-child(4){grid-column:1/5;grid-row:2}
+    .g-item:nth-child(5){grid-column:5/9;grid-row:2}
+    .g-item:nth-child(6){grid-column:9/13;grid-row:2}
+    .gv1{background:linear-gradient(145deg,#111,#181808)}
+    .gv2{background:linear-gradient(145deg,#121208,#0F0F06)}
+    .gv3{background:linear-gradient(145deg,#141414,#181408)}
+    .gv4{background:linear-gradient(145deg,#101006,#131310)}
+    .gv5{background:linear-gradient(145deg,#0C0C08,#141410)}
+    .gv6{background:linear-gradient(145deg,#111108,#0E0E0A)}
+    .g-emoji { font-size: 2.4rem; opacity: .1; }
+    .g-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 1.4rem 1rem .9rem;
+      background: linear-gradient(0deg,rgba(8,8,8,.9) 0%,transparent 100%);
+      font-size: .66rem; font-weight: 400;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { padding: 9rem 4rem; max-width: 1400px; margin: 0 auto; }
+    .testi-header { display: grid; grid-template-columns: 5fr 6fr; gap: 6rem; align-items: end; margin-bottom: 4.5rem; }
+    .testi-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      line-height: .9; letter-spacing: .03em;
+    }
+    .testi-title .accent { color: var(--lime); }
+    .testi-intro { font-size: .9rem; color: var(--muted); line-height: 1.85; font-weight: 300; }
+    .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); }
+    .testi {
+      background: var(--black); padding: 2.8rem 2.4rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transition: background .3s;
+    }
+    .testi:hover { background: var(--card); }
+    .testi-mark {
+      font-family: 'DM Serif Display', serif;
+      font-size: 4rem; color: var(--lime);
+      line-height: .5; margin-bottom: 1.8rem; opacity: .4;
+      font-style: italic;
+    }
+    .testi-text { font-size: .92rem; font-weight: 300; color: rgba(242,242,240,.7); line-height: 1.9; font-style: italic; }
+    .testi-author { margin-top: 2.5rem; display: flex; align-items: center; gap: 1rem; }
+    .testi-av {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--lime-xs); border: 1px solid rgba(201,214,32,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .testi-name { font-size: .84rem; font-weight: 500; color: var(--white); }
+    .testi-role { font-size: .74rem; color: var(--muted); margin-top: .1rem; font-weight: 300; }
+    .testi-stars { color: var(--lime); font-size: .68rem; margin-top: .2rem; letter-spacing: .06em; }
+
+    /* ── STEPS ── */
+    .steps-section { padding: 9rem 4rem; max-width: 1400px; margin: 0 auto; }
+    .steps-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      line-height: .9; letter-spacing: .03em;
+      margin-top: .8rem; margin-bottom: 4.5rem;
+    }
+    .steps-title .accent { color: var(--lime); }
+    .steps-track { display: grid; grid-template-columns: repeat(3,1fr); }
+    .step {
+      padding: 3rem 2.5rem; border: 1px solid var(--border);
+      border-right: none; position: relative; overflow: hidden;
+      transition: background .3s;
+    }
+    .step:last-child { border-right: 1px solid var(--border); }
+    .step:hover { background: var(--card); }
+    .step-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 7rem; font-weight: 400; line-height: .8;
+      color: var(--border2); position: absolute;
+      top: 1rem; right: 1.5rem; transition: color .3s;
+    }
+    .step:hover .step-num { color: rgba(201,214,32,.08); }
+    .step-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--lime); color: var(--lime);
+      font-size: .8rem; font-weight: 500;
+      margin-bottom: 1.8rem; position: relative; z-index: 1;
+    }
+    .step-title { font-size: 1.1rem; font-weight: 500; color: var(--white); margin-bottom: .8rem; position: relative; z-index: 1; }
+    .step-text { font-size: .84rem; color: var(--muted); line-height: 1.75; font-weight: 300; position: relative; z-index: 1; }
+    .steps-cta { display: flex; justify-content: center; margin-top: 4rem; }
+
+    /* ── FINAL CTA ── */
+    .final-cta {
+      background: var(--lime); padding: 9rem 4rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .final-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .final-cta-inner { position: relative; z-index: 1; }
+    .final-cta .label { color: var(--black); }
+    .final-cta .label::before { background: var(--black); }
+    .final-cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 9vw, 10rem);
+      line-height: .88; letter-spacing: .02em;
+      color: var(--black); margin-bottom: 1.5rem;
+    }
+    .final-cta-sub {
+      font-size: .96rem; color: rgba(8,8,8,.55);
+      max-width: 400px; margin: 0 auto 3.5rem;
+      font-weight: 300; line-height: 1.85;
+    }
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--black); color: var(--lime);
+      padding: 1rem 2.2rem; border-radius: 2px;
+      font-size: .8rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none;
+      transition: transform .3s var(--ease), box-shadow .3s;
+    }
+    .btn-dark:hover { transform: translateY(-3px); box-shadow: 0 16px 50px rgba(0,0,0,.3); }
+    .btn-dark svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #050505; border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo img { height: 40px; width: auto; opacity: .75; transition: opacity .2s; }
+    .footer-logo img:hover { opacity: 1; }
+    footer p { font-size: .74rem; color: var(--muted); font-weight: 300; letter-spacing: .06em; }
+    .footer-links { display: flex; gap: 2rem; }
+    .footer-links a {
+      font-size: .72rem; font-weight: 400;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--lime); }
+
+    /* ── WA FLOAT ── */
+    .wa-float {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      width: 54px; height: 54px; border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; color: white;
+      box-shadow: 0 8px 30px rgba(37,211,102,.3);
+      transition: transform .3s var(--ease);
+    }
+    .wa-float:hover { transform: scale(1.1); }
+    .wa-float svg { width: 24px; height: 24px; }
+    .wa-pulse {
+      position: absolute; inset: -5px; border-radius: 50%;
+      border: 1.5px solid rgba(37,211,102,.3);
+      animation: waPulse 2.5s ease-out infinite;
+    }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes waPulse { 0%{transform:scale(1);opacity:.5} 100%{transform:scale(1.8);opacity:0} }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1100px){
+      nav{padding:1.2rem 2rem}
+      .hero-body{padding:0 2rem 5rem}
+      .about{grid-template-columns:1fr;gap:3rem;padding:6rem 2rem}
+      .services{padding:6rem 2rem}
+      .services-header{grid-template-columns:1fr}
+      .cafe-section{margin:0 2rem;grid-template-columns:1fr}
+      .cafe-visual{min-height:300px}
+      .cafe-content{padding:3.5rem 2.5rem}
+      .gallery-section{padding:6rem 2rem}
+      .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+      .g-item{grid-column:auto!important;grid-row:auto!important;height:190px}
+      .testimonials{padding:6rem 2rem}
+      .testi-header{grid-template-columns:1fr;gap:2rem}
+      .testi-grid{grid-template-columns:1fr}
+      .steps-section{padding:6rem 2rem}
+      .steps-track{grid-template-columns:1fr}
+      .step{border-right:1px solid var(--border)!important;border-bottom:none}
+      .step:last-child{border-bottom:1px solid var(--border)}
+      .final-cta{padding:6rem 2rem}
+      footer{padding:2rem 2rem}
+      .divider{margin:0 2rem}
+      .about-stats{grid-template-columns:1fr 1fr 1fr}
+    }
+    @media(max-width:768px){
+      nav{padding:1rem 1.2rem}
+      .nav-links{display:none}
+      .nav-links.open{
+        display:flex;flex-direction:column;gap:0;
+        position:fixed;inset:0;top:68px;
+        background:var(--black);padding:2rem 1.5rem;
+        border-top:1px solid var(--border);z-index:99;overflow-y:auto;
+      }
+      .nav-links.open li{border-bottom:1px solid var(--border)}
+      .nav-links.open a{display:block;padding:1rem 0;font-size:1rem}
+      .hamburger{display:flex}
+      .hero-title{font-size:clamp(4.5rem,18vw,8rem)}
+      .hero-bottom{flex-direction:column;align-items:flex-start}
+      .pillar-grid{grid-template-columns:1fr}
+      .pillar:nth-child(2){border-right:none}
+      .pillar:nth-child(3){border-bottom:1px solid var(--border)}
+      .pillar:nth-child(2n){border-right:none}
+      .services-header{flex-direction:column;align-items:flex-start}
+      .svc-row{grid-template-columns:50px 1fr;gap:1.5rem}
+      .svc-tags{display:none}
+      .gallery-grid{grid-template-columns:1fr}
+      .g-item{height:160px}
+      .final-cta{padding:5rem 1.5rem}
+      footer{flex-direction:column;text-align:center;padding:2rem 1.5rem}
+      .about-stats{grid-template-columns:1fr}
+      .stat{border-right:none;border-bottom:1px solid var(--border)}
+      .stat:last-child{border-bottom:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#inicio" class="nav-logo">
+    <img src="data:image/jpeg;base64,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" alt="Strong Center" />
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#experiencia">Nosotros</a></li>
+    <li><a href="#clases">Clases</a></li>
+    <li><a href="#cafe">Café</a></li>
+    <li><a href="#testimonios">Comunidad</a></li>
+    <li>
+      <a href="https://wa.me/5492262000000?text=Hola!%20Vi%20la%20web%20y%20quiero%20saber%20m%C3%A1s%20sobre%20Strong%20Center%20%F0%9F%92%AA"
+         target="_blank" class="nav-cta">Escribinos</a>
+    </li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-glow"></div>
+  <div class="hero-body">
+    <p class="hero-eyebrow">Necochea, Buenos Aires &nbsp;·&nbsp; Gym · Café · Comunidad</p>
+    <h1 class="hero-title">
+      <span class="ghost">Strong</span><br>
+      <span class="accent">Center</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-sub">
+        No es solo entrenamiento.<br>
+        Es el lugar donde te <em>convertís en quien querés ser</em> y después te quedás a tomar un café con los que lo vivieron con vos.
+      </p>
+      <div class="hero-actions">
+        <a href="https://wa.me/5492262000000?text=Hola!%20Vi%20la%20web%20y%20quiero%20saber%20m%C3%A1s%20sobre%20Strong%20Center%20%F0%9F%92%AA"
+           target="_blank" class="btn-lime">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Escribinos
+        </a>
+        <a href="#clases" class="btn-ghost">Ver clases</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">Strong Center<span class="tdot"></span></span>
+      <span class="ticker-item">Entrenamiento<span class="tdot"></span></span>
+      <span class="ticker-item">Comunidad<span class="tdot"></span></span>
+      <span class="ticker-item">Café de especialidad<span class="tdot"></span></span>
+      <span class="ticker-item">Necochea<span class="tdot"></span></span>
+      <span class="ticker-item">Strong Center<span class="tdot"></span></span>
+      <span class="ticker-item">Entrenamiento<span class="tdot"></span></span>
+      <span class="ticker-item">Comunidad<span class="tdot"></span></span>
+      <span class="ticker-item">Café de especialidad<span class="tdot"></span></span>
+      <span class="ticker-item">Necochea<span class="tdot"></span></span>
+      <span class="ticker-item">Strong Center<span class="tdot"></span></span>
+      <span class="ticker-item">Entrenamiento<span class="tdot"></span></span>
+      <span class="ticker-item">Comunidad<span class="tdot"></span></span>
+      <span class="ticker-item">Café de especialidad<span class="tdot"></span></span>
+      <span class="ticker-item">Necochea<span class="tdot"></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="experiencia" style="border-top:1px solid var(--border)">
+  <div class="about">
+    <div class="about-left">
+      <p class="label reveal">¿Qué es Strong Center?</p>
+      <h2 class="about-title reveal d1">Más que<br>un <span class="accent">gym.</span></h2>
+      <p class="about-desc reveal d2">
+        Nos cansamos de los gimnasios fríos y sin identidad. Strong Center es un <strong>espacio con alma</strong>: el ambiente, las personas, el acompañamiento y hasta el café que tomás al terminar forman parte de la experiencia.<br><br>
+        Acá no venís a cumplir. <strong>Venís a disfrutar el proceso.</strong>
+      </p>
+      <div class="about-stats reveal d3">
+        <div class="stat"><div class="stat-num">+300</div><div class="stat-label">Miembros activos</div></div>
+        <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Años en Necochea</div></div>
+        <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Clases semanales</div></div>
+      </div>
+    </div>
+    <div class="pillar-grid reveal d2">
+      <div class="pillar">
+        <div class="pillar-dot"></div>
+        <div class="pillar-title">Comunidad real</div>
+        <p class="pillar-text">Personas que se apoyan, se conocen y comparten algo más que una rutina.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-dot"></div>
+        <div class="pillar-title">Bienestar integral</div>
+        <p class="pillar-text">El movimiento como hábito, no como castigo. Cuerpo, mente y energía.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-dot"></div>
+        <div class="pillar-title">El café del gym</div>
+        <p class="pillar-text">Quedarse es parte de la experiencia. Charlar, recargar y disfrutar.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-dot"></div>
+        <div class="pillar-title">Acompañamiento</div>
+        <p class="pillar-text">Coaches presentes que te guían en cada etapa, sin importar tu nivel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider"></div>
+
+<!-- SERVICES -->
+<section id="clases">
+  <div class="services">
+    <div class="services-header">
+      <div>
+        <p class="label reveal">Nuestras clases</p>
+        <h2 class="srv-title reveal d1">Movimiento<br>que <span class="accent">sentís</span> tuyo.</h2>
+      </div>
+      <p class="srv-desc reveal d2">Diseñamos cada clase para que sea desafiante y disfrutable a la vez. Vení con cualquier nivel — te adaptamos.</p>
+    </div>
+    <div class="services-list">
+      <div class="svc-row reveal">
+        <span class="svc-num">01</span>
+        <div class="svc-info">
+          <div class="svc-name">Entrenamiento Funcional</div>
+          <p class="svc-text">Movimientos que aplican a tu vida real. Fuerza, coordinación y resistencia en un ambiente que te desafía a dar lo mejor cada sesión.</p>
+        </div>
+        <div class="svc-tags">
+          <span class="tag">Todos los niveles</span>
+          <span class="tag">Fuerza</span>
+          <span class="tag">Resistencia</span>
+        </div>
+      </div>
+      <div class="svc-row reveal d1">
+        <span class="svc-num">02</span>
+        <div class="svc-info">
+          <div class="svc-name">Clases Grupales</div>
+          <p class="svc-text">La energía del grupo hace la diferencia. Clases dinámicas con música, ritmo y un ambiente que contagia las ganas.</p>
+        </div>
+        <div class="svc-tags">
+          <span class="tag">Cardio</span>
+          <span class="tag">HIIT</span>
+          <span class="tag">Ritmo</span>
+        </div>
+      </div>
+      <div class="svc-row reveal d2">
+        <span class="svc-num">03</span>
+        <div class="svc-info">
+          <div class="svc-name">Bienestar & Movilidad</div>
+          <p class="svc-text">El descanso también es entrenamiento. Elongación, movilidad y trabajo consciente del cuerpo para que llegués al 100% siempre.</p>
+        </div>
+        <div class="svc-tags">
+          <span class="tag">Recuperación</span>
+          <span class="tag">Flexibilidad</span>
+          <span class="tag">Mindful</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider"></div>
+
+<!-- CAFÉ -->
+<section id="cafe" style="padding:6rem 0">
+  <div class="cafe-section">
+    <div class="cafe-visual reveal">
+      <div class="cafe-bg-glow"></div>
+      <div class="cafe-bg-circle c1"></div>
+      <div class="cafe-bg-circle c2"></div>
+      <div class="cafe-inner">
+        <span class="cafe-icon">☕</span>
+        <div class="cafe-brand">Strong <span>Coffee</span></div>
+        <div class="cafe-tagline">El café del gym · Necochea</div>
+      </div>
+    </div>
+    <div class="cafe-content">
+      <p class="label reveal">Nuestro diferencial</p>
+      <h2 class="cafe-title reveal d1">Quedarse es<br><span class="accent">parte</span><br>del plan.</h2>
+      <p class="cafe-desc reveal d2">
+        Terminás de entrenar y no tenés ganas de irte. <strong>Así lo diseñamos.</strong> Nuestro café es el espacio donde la comunidad se forma de verdad: charlas, recargas y momentos que van mucho más allá del entrenamiento.
+      </p>
+      <div class="cafe-items reveal d3">
+        <div class="cafe-item">
+          <div class="cafe-item-icon">☕</div>
+          <div>
+            <div class="cafe-item-title">Café de especialidad</div>
+            <div class="cafe-item-text">Granos seleccionados, preparación artesanal. El mejor café post-entreno.</div>
+          </div>
+        </div>
+        <div class="cafe-item">
+          <div class="cafe-item-icon">🥤</div>
+          <div>
+            <div class="cafe-item-title">Opciones saludables</div>
+            <div class="cafe-item-text">Smoothies, proteínas, snacks naturales. Todo lo que tu cuerpo necesita.</div>
+          </div>
+        </div>
+        <div class="cafe-item">
+          <div class="cafe-item-icon">🛋️</div>
+          <div>
+            <div class="cafe-item-title">Espacio para quedarse</div>
+            <div class="cafe-item-text">Ambiente cómodo y con buena onda para desconectar o reconectar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider"></div>
+
+<!-- GALLERY -->
+<section id="galeria">
+  <div class="gallery-section">
+    <div class="gallery-header">
+      <div>
+        <p class="label reveal">Galería</p>
+        <h2 class="gal-title reveal d1">El ambiente<br>que te <span class="accent">espera.</span></h2>
+      </div>
+      <a href="https://instagram.com/strongcenter_gym" target="_blank" class="btn-outline reveal d2">
+        @strongcenter_gym ↗
+      </a>
+    </div>
+    <div class="gallery-grid reveal">
+      <div class="g-item"><div class="g-inner gv1"><span class="g-emoji">💪</span><div class="g-label">Zona de pesas</div></div></div>
+      <div class="g-item"><div class="g-inner gv2"><span class="g-emoji">🏋️</span><div class="g-label">Funcional</div></div></div>
+      <div class="g-item"><div class="g-inner gv3"><span class="g-emoji">🧘</span><div class="g-label">Bienestar</div></div></div>
+      <div class="g-item"><div class="g-inner gv4"><span class="g-emoji">☕</span><div class="g-label">Strong Coffee</div></div></div>
+      <div class="g-item"><div class="g-inner gv5"><span class="g-emoji">🤝</span><div class="g-label">Comunidad</div></div></div>
+      <div class="g-item"><div class="g-inner gv6"><span class="g-emoji">🎵</span><div class="g-label">Clases grupales</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonios">
+  <div class="testimonials">
+    <div class="testi-header">
+      <div>
+        <p class="label reveal">Comunidad</p>
+        <h2 class="testi-title reveal d1">Lo que dicen<br>los que ya son<br><span class="accent">parte.</span></h2>
+      </div>
+      <p class="testi-intro reveal d2">La mejor prueba de lo que somos está en la gente que eligió quedarse. Cada persona que entra a Strong Center trae su historia — y la comparte.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi reveal">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-text">Vine pensando que era un gym más. Me quedé por la gente. Hay algo en el ambiente que te da ganas de volver al día siguiente.</p>
+        </div>
+        <div class="testi-author">
+          <div class="testi-av">👩</div>
+          <div>
+            <div class="testi-name">Laura M.</div>
+            <div class="testi-role">Miembro desde 2023</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi reveal d2">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-text">El café del final del entreno es mi ritual. Me quedo charlando con los coaches y otros socios. No lo vivo como un gym, lo vivo como un lugar propio.</p>
+        </div>
+        <div class="testi-author">
+          <div class="testi-av">👨</div>
+          <div>
+            <div class="testi-name">Martín G.</div>
+            <div class="testi-role">Miembro desde 2022</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi reveal d3">
+        <div>
+          <div class="testi-mark">"</div>
+          <p class="testi-text">Empecé sin saber nada y nunca me sentí perdida. Los coaches te acompañan de verdad, y el ambiente hace que todo fluya mucho más fácil.</p>
+        </div>
+        <div class="testi-author">
+          <div class="testi-av">👩</div>
+          <div>
+            <div class="testi-name">Sofía R.</div>
+            <div class="testi-role">Miembro desde 2024</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider"></div>
+
+<!-- STEPS -->
+<section id="como-empezar">
+  <div class="steps-section">
+    <p class="label reveal">¿Cómo empezar?</p>
+    <h2 class="steps-title reveal d1">Tres pasos<br>para arrancar <span class="accent">hoy.</span></h2>
+    <div class="steps-track">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-badge">1</div>
+        <div class="step-title">Nos escribís</div>
+        <p class="step-text">Por WhatsApp, sin vueltas. Te respondemos rápido y te contamos todo sobre el espacio.</p>
+      </div>
+      <div class="step reveal d2">
+        <div class="step-num">02</div>
+        <div class="step-badge">2</div>
+        <div class="step-title">Venís a conocernos</div>
+        <p class="step-text">Primera clase de prueba sin compromiso. Sentí el ambiente, conocé a los coaches y llevate las ganas de más.</p>
+      </div>
+      <div class="step reveal d4">
+        <div class="step-num">03</div>
+        <div class="step-badge">3</div>
+        <div class="step-title">Arrancás</div>
+        <p class="step-text">Te sumás a la comunidad. Entrená, tomá tu café y hacé de Strong Center el mejor momento de tu día.</p>
+      </div>
+    </div>
+    <div class="steps-cta reveal">
+      <a href="https://wa.me/5492262000000?text=Hola!%20Quiero%20conocer%20Strong%20Center%20y%20hacer%20mi%20primera%20clase%20%F0%9F%92%AA"
+         target="_blank" class="btn-lime">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Quiero empezar
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner reveal">
+    <p class="label">Sumate hoy</p>
+    <h2 class="final-cta-title">Tu lugar<br>te espera.</h2>
+    <p class="final-cta-sub">No importa desde dónde arrancás. Lo que importa es el primer paso. Escribinos y empezamos juntos.</p>
+    <a href="https://wa.me/5492262000000?text=Hola!%20Vi%20la%20web%20y%20quiero%20saber%20m%C3%A1s%20sobre%20Strong%20Center%20%F0%9F%92%AA"
+       target="_blank" class="btn-dark">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Escribinos por WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#inicio" class="footer-logo">
+    <img src="data:image/jpeg;base64,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" alt="Strong Center" />
+  </a>
+  <p>Gym · Café · Comunidad — Necochea, Buenos Aires</p>
+  <div class="footer-links">
+    <a href="https://wa.me/5492262000000" target="_blank">WhatsApp</a>
+    <a href="https://instagram.com/strongcenter_gym" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a class="wa-float"
+   href="https://wa.me/5492262000000?text=Hola!%20Vi%20la%20web%20de%20Strong%20Center%20%F0%9F%92%AA"
+   target="_blank" aria-label="WhatsApp">
+  <div class="wa-pulse"></div>
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+  function toggleMenu() { document.getElementById('nav-links').classList.toggle('open'); }
+  document.querySelectorAll('#nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('nav-links').classList.remove('open')));
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }),
+    { threshold: .08, rootMargin: '0px 0px -20px 0px' }
+  );
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
